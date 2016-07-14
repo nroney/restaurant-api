@@ -5,12 +5,12 @@ var Yelp = require('yelp');
 
 var http = require('http');
 var parser = require('xml2json');
-var rest = require('restler'),
-    crypto = require('crypto'),
-    apiKey = 'c671fb327b6c4a24abaddf8eff17b157',
-    fatSecretRestUrl = 'http://platform.fatsecret.com/rest/server.api',
-    sharedSecret = '0d8abacccec44b7e9fc211ac74c64bde',
-    date = new Date();
+var rest = require('restler');
+var crypto = require('crypto');
+var apiKey = '023eaa572e7f49b4be6415308282d45d';
+var fatSecretRestUrl = 'http://platform.fatsecret.com/rest/server.api';
+var sharedSecret = '4970d55d2b8d408886a566b86cb984bd';
+
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
@@ -23,13 +23,14 @@ router.get('/', function (req, res) {
 });
 
 router.get('/getFood', function (req, res) {
+    var newDate = new Date();
     var searchTerm = req.query.food;
     var reqObj = {
         method: 'foods.search',
         oauth_consumer_key: apiKey,
-        oauth_nonce: Math.random().toString(36).replace(/[^a-z]/, '').substr(2),
+        oauth_nonce: 'abc',
         oauth_signature_method: 'HMAC-SHA1',
-        oauth_timestamp: Math.floor(date.getTime() / 1000),
+        oauth_timestamp: Math.round(newDate.getTime() / 1000),
         oauth_version: '1.0',
         search_expression: searchTerm
     };
@@ -39,6 +40,8 @@ router.get('/getFood', function (req, res) {
     for (var i in reqObj) {
         paramsStr += "&" + i + "=" + reqObj[i];
     }
+
+// yank off that first "&"
     paramsStr = paramsStr.substr(1);
 
     var sigBaseStr = "POST&"
@@ -46,12 +49,12 @@ router.get('/getFood', function (req, res) {
         + "&"
         + encodeURIComponent(paramsStr);
 
-    // no  Access Token token (there's no user .. we're just calling foods.search)
+// no  Access Token token (there's no user .. we're just calling foods.search)
     sharedSecret += "&";
 
-    var hashedBaseStr = crypto.createHmac('sha1', sharedSecret).update(sigBaseStr).digest('base64');
+    var hashedBaseStr  = crypto.createHmac('sha1', sharedSecret).update(sigBaseStr).digest('base64');
 
-    // Add oauth_signature to the request object
+// Add oauth_signature to the request object
     reqObj.oauth_signature = hashedBaseStr;
     rest.post(fatSecretRestUrl, {
         data: reqObj
@@ -60,6 +63,8 @@ router.get('/getFood', function (req, res) {
 
         var convertedData = JSON.parse(parser.toJson(xmlData));
         res.json({message: convertedData});
+        console.log('oauth_timestamp:'+reqObj.oauth_timestamp);
+        console.log('oauth_nonce:'+reqObj.oauth_nonce);
     });
 });
 
@@ -86,7 +91,6 @@ router.get('/heartbeat', function (req, res) {
 app.use('/api', router);
 
 app.listen(port);
-
-onsole.log("Server listening on port", port);
+console.log("Server listening on port", port);
 
 module.exports = app;
