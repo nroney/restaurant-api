@@ -72,6 +72,8 @@ router.get('/getFood', function (req, res) {
             res.json({message: convertedData});
             console.log('oauth_timestamp:'+reqObj.oauth_timestamp);
             console.log('oauth_nonce:'+reqObj.oauth_nonce);
+            console.log('hashedBaseStr:'+hashedBaseStr);
+            console.log('sigBaseStr:'+ sigBaseStr)
         }
     });
 });
