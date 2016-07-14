@@ -1,5 +1,6 @@
 var express = require('express');
 var app = express();
+var request = require('request');
 var bodyParser = require('body-parser');
 var Yelp = require('yelp');
 
@@ -15,7 +16,8 @@ var sharedSecret = '4970d55d2b8d408886a566b86cb984bd';
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 
-var port = process.env.PORT || 8080;
+
+var port = process.env.PORT || 8081;
 var router = express.Router();
 
 router.get('/', function (req, res) {
@@ -28,7 +30,7 @@ router.get('/getFood', function (req, res) {
     var reqObj = {
         method: 'foods.search',
         oauth_consumer_key: apiKey,
-        oauth_nonce: 'abc',
+        oauth_nonce: Math.random().toString(36).replace(/[^a-z]/, '').substr(2),
         oauth_signature_method: 'HMAC-SHA1',
         oauth_timestamp: Math.round(newDate.getTime() / 1000),
         oauth_version: '1.0',
@@ -56,15 +58,21 @@ router.get('/getFood', function (req, res) {
 
 // Add oauth_signature to the request object
     reqObj.oauth_signature = hashedBaseStr;
-    rest.post(fatSecretRestUrl, {
-        data: reqObj
-    }).on('complete', function (data, response) {
-        var xmlData = data;
+    request({
+        url: fatSecretRestUrl, //URL to hit
+        method: 'POST',
+        qs: reqObj
+    }, function (error, response, body) {
+        if (error) {
+            console.log(error);
+        } else {
+            var xmlData = body;
 
-        var convertedData = JSON.parse(parser.toJson(xmlData));
-        res.json({message: convertedData});
-        console.log('oauth_timestamp:'+reqObj.oauth_timestamp);
-        console.log('oauth_nonce:'+reqObj.oauth_nonce);
+            var convertedData = JSON.parse(parser.toJson(xmlData));
+            res.json({message: convertedData});
+            console.log('oauth_timestamp:'+reqObj.oauth_timestamp);
+            console.log('oauth_nonce:'+reqObj.oauth_nonce);
+        }
     });
 });
 
