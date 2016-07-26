@@ -1,4 +1,4 @@
-TruckFit Test Backend
+Restaurant API
 ==============
 
 Endpoints:
