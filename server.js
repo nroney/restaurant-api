@@ -9,7 +9,7 @@ var http = require('http');
 var parser = require('xml2json');
 var rest = require('restler');
 var crypto = require('crypto');
-var apiKey = '023eaa572e7f49b4be6415308282d45d';
+var apiKey = 'xxxxxx';
 var fatSecretRestUrl = 'http://platform.fatsecret.com/rest/server.api';
 
 
@@ -20,11 +20,11 @@ var port = process.env.PORT || 8081;
 var router = express.Router();
 
 router.get('/', function (req, res) {
-    res.json({message: 'Mock Service'});
+    res.json({message: 'Service'});
 });
 
 router.get('/getFood', function (req, res) {
-    var sharedSecret = '4970d55d2b8d408886a566b86cb984bd';
+    var sharedSecret = 'xxxxxx';
     var newDate = new Date();
     var searchTerm = encodeURIComponent(req.query.food);
     var reqObj = {
@@ -72,10 +72,10 @@ router.get('/getFood', function (req, res) {
 
 router.get('/getLocations', function (req, res) {
     var yelp = new Yelp({
-        consumer_key: 'M0w4FiLD_azE3YkpM-S6ZA',
-        consumer_secret: 'pD5sdfhrKX99SospKcAxMyjp4j8',
-        token: '6bMBh5Q1R-CIpVn3s5jj-HwrDYn3Ag0B',
-        token_secret: 'D0HpcY8lJFSN-VGPZFLjWqn5UNg'
+        consumer_key: 'xxxxxx',
+        consumer_secret: 'xxxxxx',
+        token: 'xxxxxx',
+        token_secret: 'xxxxxx'
     });
 
     var radius = (1609.34 * parseInt(req.query.radius_filter));
